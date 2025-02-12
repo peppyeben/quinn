@@ -57,15 +57,18 @@ export const createTradeBySourceAmount = async (
     const minReturnAmount =
         potentialOutputAmount - (potentialOutputAmount * BigInt(slippage)) / BigInt(100);
 
-    const functionName = "swap";
+    const functionName = "tradeBySourceAmount";
     const functionArgs = [
-        "0xTokenInAddress", // tokenIn (address)
-        "0xTokenOutAddress", // tokenOut (address)
-        ethers.parseUnits("1", 18), // amount (uint256)
+        sourceTokenToUse,
+        targetTokenToUse,
+        parseUnits(String(sourceAmount), "ether"),
+        minReturnAmount,
+        deadline,
+        beneficiary,
     ];
 
     const iface = new Interface(POOL_COLLECTION_WRITE_ABI);
-    // const transactionEncodedData =
+    const transactionEncodedData = iface.encodeFunctionData(functionName, functionArgs);
 
     // If trying to trade with ETH, there should be a value
     if (
@@ -76,7 +79,18 @@ export const createTradeBySourceAmount = async (
         const transaction: MetaTransaction = {
             to: beneficiary,
             value: parseEther(sourceAmount.toString()).toString(),
-            data: "0x",
+            data: transactionEncodedData,
         };
+
+        return transaction;
+    } else {
+        // Create EVM transaction object
+        const transaction: MetaTransaction = {
+            to: beneficiary,
+            value: "0x",
+            data: transactionEncodedData,
+        };
+
+        return transaction;
     }
 };
