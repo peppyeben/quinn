@@ -5,10 +5,10 @@ import { tradeContract } from "../../modules/trade-contract-read";
 import { Interface } from "ethers";
 import { POOL_COLLECTION_WRITE_ABI } from "../../modules/abi/pool-collection-write";
 
-export const createTradeBySourceAmount = async (
+export const createTradeByTargetAmount = async (
     sourceToken: string,
     targetToken: string,
-    sourceAmount: number,
+    targetAmount: number,
     beneficiary: string,
     slippage: number
 ) => {
@@ -44,21 +44,21 @@ export const createTradeBySourceAmount = async (
 
         const contract = await tradeContract();
 
-        const potentialOutputAmount = await contract.tradeOutputBySourceAmount(
+        const potentialInputAmount = await contract.tradeInputByTargetAmount(
             sourceTokenToUse,
             targetTokenToUse,
-            parseUnits(String(sourceAmount), "ether")
+            parseUnits(String(targetAmount), "ether")
         );
 
-        const minReturnAmount =
-            potentialOutputAmount - (potentialOutputAmount * BigInt(slippage)) / BigInt(100);
+        const maxInputAmount =
+            potentialInputAmount - (potentialInputAmount * BigInt(slippage)) / BigInt(100);
 
-        const functionName = "tradeBySourceAmount";
+        const functionName = "tradeByTargetAmount";
         const functionArgs = [
             sourceTokenToUse,
             targetTokenToUse,
-            parseUnits(String(sourceAmount), "ether"),
-            minReturnAmount,
+            parseUnits(String(targetAmount), "ether"),
+            maxInputAmount,
             deadline,
             beneficiary,
         ];
@@ -74,7 +74,7 @@ export const createTradeBySourceAmount = async (
             // Create EVM transaction object
             const transaction: MetaTransaction = {
                 to: process.env.NEXT_PUBLIC_BANCOR_POOL_WRITE_COLLECTION_ADDRESS as string,
-                value: parseEther(sourceAmount.toString()).toString(),
+                value: parseEther(targetAmount.toString()).toString(),
                 data: transactionEncodedData,
             };
 

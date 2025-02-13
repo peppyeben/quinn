@@ -5,8 +5,8 @@ export async function GET() {
     const pluginData = {
         openapi: "3.0.0",
         info: {
-            title: "Boilerplate",
-            description: "API for the boilerplate",
+            title: "Quinn",
+            description: "API for Quinn",
             version: "1.0.0",
         },
         servers: [
@@ -17,21 +17,23 @@ export async function GET() {
         "x-mb": {
             "account-id": ACCOUNT_ID,
             assistant: {
-                name: "Your Assistant",
+                name: "Quinn",
                 description:
-                    "An assistant that answers with blockchain information, tells the user's account id, interacts with twitter, creates transaction payloads for NEAR and EVM blockchains, and flips coins.",
+                    "An assistant that well integrated & innundated with the inner workings of Bancor Network. Bancor is a decentralized network of on-chain automated market makers (AMMs) supporting instant, low-cost trading, as well as Single-Sided Liquidity Provision and Liquidity Protection for any listed token",
                 instructions: `You are an agent used that's integrated with the Bancor Network. Bancor is a decentralized network of on-chain automated market makers (AMMs) supporting instant, low-cost trading, as well as Single-Sided Liquidity Provision and Liquidity Protection for any listed token.
                 To get the available tradeable tokens use the /api/tools/get-tradeable-pool-tokens tool, it's enough to get the data, doesn't need params. In the return values, what's important is the token name and poolDltId.
                 You can also get trade output i.e. exchange rate, how that works is: you require sourceToken (say ETH), targetToken (say LINK) and sourceAmount (say 0.2), use the /api/tools/get-trade-output tool to get the exchange rate/trade output of that trade. The user might input a token that's not supported, to validate tokens use the /api/tools/get-tradeable-pool-tokens tool to get the list of tradeable tokens.
                 You can also get required/expected trade input, it's a form of exchange rate but seems a bit different. How it works is: you require sourceToken (say ETH), targetToken (say LINK) and targetAmount (say 50), use the /api/tools/get-trade-input tool to get the exchange rate/trade input of that trade. The user might input a token that's not supported, to validate tokens use the /api/tools/get-tradeable-pool-tokens tool to get the list of tradeable tokens. What this should do is tell the user the amount of sourceToken they need to get their required targetToken.
+                While getting data (read) is good, you can do much more. Using the /api/tools/create-trade-by-source-amount tool to create a trade (output)/exchange transaction for the user. For that, you'll require the sourceToken (say, ETH), which is the token the user has, targetToken (say, DAI), which is the token the user needs, sourceAmount (amount of sourceToken the user has). The other two parameters are optional (beneficiary & slippage). Beneficiary is optional when the user's EVM wallet is connected, if not require a beneficiary for the trade. The slippage is totally optional, if the user doesn't provide it, you use 1 by default.
+                You can also use the /api/tools/create-trade-by-target-amount tool to create a trade (output)/exchange transaction for the user. For that, you'll require the sourceToken (say, ETH), which is the token the user needs, targetToken (say, DAI), which is the token the user has, targetAmount (amount of targetToken the user wants to get). The other two parameters are optional (beneficiary & slippage). Beneficiary is optional when the user's EVM wallet is connected, if not require a beneficiary for the trade. The slippage is totally optional, if the user doesn't provide it, you use 1 by default.
                 `,
-                // The ${BANCOR_POOL_TOKENS} has the list of valid supported tradeable tokens.
-                // For getting trade output, you must require the source token, target token & source amount from the user, after getting them, you're to intelligently check the ${BANCOR_POOL_TOKENS} object to get the value of both tokens and pass them as parameters when calling /api/tools/get-trade-output. If a token isn't supported, let the user know it isn't supported and also list the supported tokens.
+
                 tools: [
                     { type: "get-tradeable-pool-tokens" },
                     { type: "get-trade-output" },
                     { type: "get-trade-input" },
-                    // { type: "generate-transaction" }, { type: "generate-evm-tx" },
+                    { type: "create-trade-by-source-amount" },
+                    { type: "create-trade-by-target-amount" },
                 ],
             },
         },
@@ -51,7 +53,8 @@ export async function GET() {
                                         properties: {
                                             message: {
                                                 type: "string",
-                                                description: "The list of the names of tradeable tokens",
+                                                description:
+                                                    "The list of the names of tradeable tokens",
                                             },
                                         },
                                     },
@@ -97,7 +100,8 @@ export async function GET() {
                 get: {
                     operationId: "getTradeOutput",
                     summary: "Get Trade Output/Exchange Rate for Source & Target Token",
-                    description: "Return the trade output/exchange rate from tradeOutputBySourceAmount on bancor pool",
+                    description:
+                        "Return the trade output/exchange rate from tradeOutputBySourceAmount on bancor pool",
                     parameters: [
                         {
                             name: "sourceToken",
@@ -183,7 +187,8 @@ export async function GET() {
                 get: {
                     operationId: "getTradeInput",
                     summary: "Get Trade Input/Exchange Rate for Source & Target Token",
-                    description: "Return the trade input/exchange rate from tradeInputByTargetAmount on bancor pool",
+                    description:
+                        "Return the trade input/exchange rate from tradeInputByTargetAmount on bancor pool",
                     parameters: [
                         {
                             name: "sourceToken",
@@ -248,6 +253,252 @@ export async function GET() {
                         },
                         "500": {
                             description: "Error response",
+                            content: {
+                                "application/json": {
+                                    schema: {
+                                        type: "object",
+                                        properties: {
+                                            error: {
+                                                type: "string",
+                                                description: "Error message",
+                                            },
+                                        },
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+            "/api/tools/create-trade-by-source-amount": {
+                get: {
+                    operationId: "createTradeBySourceAmount",
+                    summary: "Create EVM transaction of a trade/exchange with source amount",
+                    description:
+                        "Generate an EVM transaction payload with specified sourceToken, targetToken, sourceAmount and optional beneficiary & slippage to be used directly in the create-trade-by-source-amount tool",
+                    parameters: [
+                        {
+                            name: "sourceToken",
+                            in: "query",
+                            required: true,
+                            schema: {
+                                type: "string",
+                            },
+                            description: "The source token (the token the user has).",
+                        },
+                        {
+                            name: "targetToken",
+                            in: "query",
+                            required: true,
+                            schema: {
+                                type: "string",
+                            },
+                            description: "The target token (the token the user wants).",
+                        },
+                        {
+                            name: "sourceAmount",
+                            in: "query",
+                            required: true,
+                            schema: {
+                                type: "string",
+                            },
+                            description:
+                                "The amount of source token the user wants to exchange/trade.",
+                        },
+                        {
+                            name: "beneficiary",
+                            in: "query",
+                            required: false,
+                            schema: {
+                                type: "string",
+                            },
+                            description: "The beneficiary of the exchange/trade.",
+                        },
+                        {
+                            name: "slippage",
+                            in: "query",
+                            required: false,
+                            schema: {
+                                type: "number",
+                            },
+                            description: "The maximum slippage precentage of the exchange/trade.",
+                        },
+                    ],
+                    responses: {
+                        "200": {
+                            description: "Successful response",
+                            content: {
+                                "application/json": {
+                                    schema: {
+                                        type: "object",
+                                        properties: {
+                                            evmSignRequest: {
+                                                type: "object",
+                                                properties: {
+                                                    to: {
+                                                        type: "string",
+                                                        description: "Receiver address",
+                                                    },
+                                                    value: {
+                                                        type: "string",
+                                                        description: "Transaction value",
+                                                    },
+                                                    data: {
+                                                        type: "string",
+                                                        description: "Transaction data",
+                                                    },
+                                                    from: {
+                                                        type: "string",
+                                                        description: "Sender address",
+                                                    },
+                                                },
+                                            },
+                                        },
+                                    },
+                                },
+                            },
+                        },
+                        "400": {
+                            description: "Bad request",
+                            content: {
+                                "application/json": {
+                                    schema: {
+                                        type: "object",
+                                        properties: {
+                                            error: {
+                                                type: "string",
+                                                description: "Error message",
+                                            },
+                                        },
+                                    },
+                                },
+                            },
+                        },
+                        "500": {
+                            description: "Server error",
+                            content: {
+                                "application/json": {
+                                    schema: {
+                                        type: "object",
+                                        properties: {
+                                            error: {
+                                                type: "string",
+                                                description: "Error message",
+                                            },
+                                        },
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+            "/api/tools/create-trade-by-target-amount": {
+                get: {
+                    operationId: "createTradeByTargetAmount",
+                    summary: "Create EVM transaction of a trade/exchange with target amount",
+                    description:
+                        "Generate an EVM transaction payload with specified sourceToken, targetToken, targetAmount and optional beneficiary & slippage to be used directly in the create-trade-by-target-amount tool",
+                    parameters: [
+                        {
+                            name: "sourceToken",
+                            in: "query",
+                            required: true,
+                            schema: {
+                                type: "string",
+                            },
+                            description: "The source token (the token the user wants).",
+                        },
+                        {
+                            name: "targetToken",
+                            in: "query",
+                            required: true,
+                            schema: {
+                                type: "string",
+                            },
+                            description: "The target token (the token the user has).",
+                        },
+                        {
+                            name: "targetAmount",
+                            in: "query",
+                            required: true,
+                            schema: {
+                                type: "string",
+                            },
+                            description:
+                                "The amount of target token the user wants to exchange/trade.",
+                        },
+                        {
+                            name: "beneficiary",
+                            in: "query",
+                            required: false,
+                            schema: {
+                                type: "string",
+                            },
+                            description: "The beneficiary of the exchange/trade.",
+                        },
+                        {
+                            name: "slippage",
+                            in: "query",
+                            required: false,
+                            schema: {
+                                type: "number",
+                            },
+                            description: "The maximum slippage precentage of the exchange/trade.",
+                        },
+                    ],
+                    responses: {
+                        "200": {
+                            description: "Successful response",
+                            content: {
+                                "application/json": {
+                                    schema: {
+                                        type: "object",
+                                        properties: {
+                                            evmSignRequest: {
+                                                type: "object",
+                                                properties: {
+                                                    to: {
+                                                        type: "string",
+                                                        description: "Receiver address",
+                                                    },
+                                                    value: {
+                                                        type: "string",
+                                                        description: "Transaction value",
+                                                    },
+                                                    data: {
+                                                        type: "string",
+                                                        description: "Transaction data",
+                                                    },
+                                                    from: {
+                                                        type: "string",
+                                                        description: "Sender address",
+                                                    },
+                                                },
+                                            },
+                                        },
+                                    },
+                                },
+                            },
+                        },
+                        "400": {
+                            description: "Bad request",
+                            content: {
+                                "application/json": {
+                                    schema: {
+                                        type: "object",
+                                        properties: {
+                                            error: {
+                                                type: "string",
+                                                description: "Error message",
+                                            },
+                                        },
+                                    },
+                                },
+                            },
+                        },
+                        "500": {
+                            description: "Server error",
                             content: {
                                 "application/json": {
                                     schema: {
@@ -372,7 +623,8 @@ export async function GET() {
                                         properties: {
                                             twitterIntentUrl: {
                                                 type: "string",
-                                                description: "The generated Twitter share intent URL",
+                                                description:
+                                                    "The generated Twitter share intent URL",
                                             },
                                         },
                                     },
@@ -418,7 +670,8 @@ export async function GET() {
                 get: {
                     operationId: "createNearTransaction",
                     summary: "Create a NEAR transaction payload",
-                    description: "Generates a NEAR transaction payload for transferring tokens to be used directly in the generate-tx tool",
+                    description:
+                        "Generates a NEAR transaction payload for transferring tokens to be used directly in the generate-tx tool",
                     parameters: [
                         {
                             name: "receiverId",
@@ -452,7 +705,8 @@ export async function GET() {
                                                 properties: {
                                                     receiverId: {
                                                         type: "string",
-                                                        description: "The receiver's NEAR account ID",
+                                                        description:
+                                                            "The receiver's NEAR account ID",
                                                     },
                                                     actions: {
                                                         type: "array",
@@ -461,14 +715,16 @@ export async function GET() {
                                                             properties: {
                                                                 type: {
                                                                     type: "string",
-                                                                    description: "The type of action (e.g., 'Transfer')",
+                                                                    description:
+                                                                        "The type of action (e.g., 'Transfer')",
                                                                 },
                                                                 params: {
                                                                     type: "object",
                                                                     properties: {
                                                                         deposit: {
                                                                             type: "string",
-                                                                            description: "The amount to transfer in yoctoNEAR",
+                                                                            description:
+                                                                                "The amount to transfer in yoctoNEAR",
                                                                         },
                                                                     },
                                                                 },
@@ -521,7 +777,8 @@ export async function GET() {
                 get: {
                     operationId: "createEvmTransaction",
                     summary: "Create EVM transaction",
-                    description: "Generate an EVM transaction payload with specified recipient and amount to be used directly in the generate-evm-tx tool",
+                    description:
+                        "Generate an EVM transaction payload with specified recipient and amount to be used directly in the generate-evm-tx tool",
                     parameters: [
                         {
                             name: "to",
@@ -594,48 +851,6 @@ export async function GET() {
                         },
                         "500": {
                             description: "Server error",
-                            content: {
-                                "application/json": {
-                                    schema: {
-                                        type: "object",
-                                        properties: {
-                                            error: {
-                                                type: "string",
-                                                description: "Error message",
-                                            },
-                                        },
-                                    },
-                                },
-                            },
-                        },
-                    },
-                },
-            },
-            "/api/tools/coinflip": {
-                get: {
-                    summary: "Coin flip",
-                    description: "Flip a coin and return the result (heads or tails)",
-                    operationId: "coinFlip",
-                    responses: {
-                        "200": {
-                            description: "Successful response",
-                            content: {
-                                "application/json": {
-                                    schema: {
-                                        type: "object",
-                                        properties: {
-                                            result: {
-                                                type: "string",
-                                                description: "The result of the coin flip (heads or tails)",
-                                                enum: ["heads", "tails"],
-                                            },
-                                        },
-                                    },
-                                },
-                            },
-                        },
-                        "500": {
-                            description: "Error response",
                             content: {
                                 "application/json": {
                                     schema: {
