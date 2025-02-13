@@ -32,8 +32,9 @@ For example, if a user wants to receive 50 LINK and is willing to trade ETH, the
 **4. Create Trade Transactions:**  Quinn can create trades for you in the following way:
 
 - You can create a trade by entering the source token, target token, and source amount you want. You can also pick who gets the tokens (beneficiary) and how much the price can change (slippage). Picking a beneficiary is optional if your EVM wallet is connected.
-- 
+
 - Or, you can create a trade by saying how much of the target token you want. Similar to the previous method, specifying a beneficiary and slippage is optional.
+
 For example, If you want to trade 1 ETH for DAI, you enter ETH as the source token, DAI as the target token, and 1 ETH as the source amount. Quinn then creates the trade. If you want 100 DAI and have ETH, you enter ETH as the source token, DAI as the target token, and 100 DAI as the target amount.
 
 
