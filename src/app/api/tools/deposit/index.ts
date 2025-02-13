@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { isAddress, parseEther, parseUnits } from "ethers";
 import { getBancorPoolTokensDepositEnabled } from "../../modules/get-bancor-pool-tokens";
 import { Interface } from "ethers";

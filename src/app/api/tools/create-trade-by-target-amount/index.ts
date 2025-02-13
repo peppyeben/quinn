@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import type { MetaTransaction } from "near-safe";
 import { isAddress, parseEther, parseUnits } from "ethers";
 import { getBancorPoolTokens } from "../../modules/get-bancor-pool-tokens";
