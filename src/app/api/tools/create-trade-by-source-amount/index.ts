@@ -53,6 +53,8 @@ export const createTradeBySourceAmount = async (
         const minReturnAmount =
             potentialOutputAmount - (potentialOutputAmount * BigInt(slippage)) / BigInt(100);
 
+        console.log(minReturnAmount);
+
         const functionName = "tradeBySourceAmount";
         const functionArgs = [
             sourceTokenToUse,
@@ -78,6 +80,8 @@ export const createTradeBySourceAmount = async (
                 data: transactionEncodedData,
             };
 
+            console.log(transaction);
+
             return transaction;
         } else {
             // Create EVM transaction object
@@ -87,6 +91,7 @@ export const createTradeBySourceAmount = async (
                 data: transactionEncodedData,
             };
 
+            console.log(transaction);
             return transaction;
         }
     } catch (error) {
