@@ -4,6 +4,7 @@ import { getBancorPoolTokensDepositEnabled } from "../../modules/get-bancor-pool
 import { Interface } from "ethers";
 import { POOL_COLLECTION_WRITE_ABI } from "../../modules/abi/pool-collection-write";
 import { MetaTransaction } from "near-safe";
+import { ERC20_TOKEN_APPROVAL } from "../../modules/trade-contract-read";
 
 export const deposit = async (token: string, amount: number, recepient?: string) => {
     try {
@@ -45,17 +46,27 @@ export const deposit = async (token: string, amount: number, recepient?: string)
 
                 console.log(transaction);
 
-                return transaction;
+                return { transaction };
             } else {
+                const ERC20TransactionEncodedData = ERC20_TOKEN_APPROVAL();
+
+                // Create Token Approval transaction object
+                const erc20TokenApprovalTransaction: MetaTransaction = {
+                    to: token,
+                    value: "0x0",
+                    data: ERC20TransactionEncodedData,
+                };
+
                 // Create EVM transaction object
                 const transaction: MetaTransaction = {
                     to: process.env.NEXT_PUBLIC_BANCOR_POOL_WRITE_COLLECTION_ADDRESS as string,
-                    value: "0x",
+                    value: "0x0",
                     data: transactionEncodedData,
                 };
 
+                console.log(erc20TokenApprovalTransaction);
                 console.log(transaction);
-                return transaction;
+                return { erc20TokenApprovalTransaction, transaction };
             }
         } else {
             const functionName = "depositFor";
@@ -78,17 +89,27 @@ export const deposit = async (token: string, amount: number, recepient?: string)
 
                 console.log(transaction);
 
-                return transaction;
+                return { transaction };
             } else {
+                const ERC20TransactionEncodedData = ERC20_TOKEN_APPROVAL();
+
+                // Create Token Approval transaction object
+                const erc20TokenApprovalTransaction: MetaTransaction = {
+                    to: token,
+                    value: "0x0",
+                    data: ERC20TransactionEncodedData,
+                };
+
                 // Create EVM transaction object
                 const transaction: MetaTransaction = {
                     to: process.env.NEXT_PUBLIC_BANCOR_POOL_WRITE_COLLECTION_ADDRESS as string,
-                    value: "0x",
+                    value: "0x0",
                     data: transactionEncodedData,
                 };
 
+                console.log(erc20TokenApprovalTransaction);
                 console.log(transaction);
-                return transaction;
+                return { erc20TokenApprovalTransaction, transaction };
             }
         }
     } catch (error) {

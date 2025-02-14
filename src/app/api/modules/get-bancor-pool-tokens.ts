@@ -1,11 +1,21 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import axios from "axios";
+import https from "https";
 
 export const getBancorPoolTokens = async () => {
     try {
-        const API_URL = "https://api-v3.bancor.network/pools";
+        const API_URL = process.env.NEXT_PUBLIC_BANCOR_POOL_API_URL as string;
 
-        const res = await axios.get(API_URL);
+        // Create custom agent with forced IPv4
+        const agent = new https.Agent({
+            family: 4, // Force IPv4
+            rejectUnauthorized: true,
+        });
+
+        const res = await axios.get(API_URL, {
+            timeout: 30000,
+            httpsAgent: agent,
+        });
 
         const mappedRes = res.data.data
             .filter((x: any) => x.tradingEnabled == true)
@@ -29,10 +39,18 @@ export const getBancorPoolTokens = async () => {
 
 export const getBancorPoolTokensDepositEnabled = async () => {
     try {
-        const API_URL = "https://api-v3.bancor.network/pools";
+        const API_URL = process.env.NEXT_PUBLIC_BANCOR_POOL_API_URL as string;
 
-        const res = await axios.get(API_URL);
+        // Create custom agent with forced IPv4
+        const agent = new https.Agent({
+            family: 4, // Force IPv4
+            rejectUnauthorized: true,
+        });
 
+        const res = await axios.get(API_URL, {
+            timeout: 30000,
+            httpsAgent: agent,
+        });
         const mappedRes = res.data.data
             .filter((x: any) => x.depositingEnabled == true)
             .map((x: any) => ({

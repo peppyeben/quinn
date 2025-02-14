@@ -3,6 +3,7 @@ import { signRequestFor } from "@bitte-ai/agent-sdk";
 import { headers } from "next/headers";
 import { createTradeByTargetAmount } from ".";
 import { isAddress } from "ethers";
+import { MetaTransaction } from "near-safe";
 
 export async function GET(request: Request) {
     try {
@@ -37,7 +38,7 @@ export async function GET(request: Request) {
             );
         }
 
-        const transaction = await createTradeByTargetAmount(
+        const { erc20TokenApprovalTransaction, transaction } = await createTradeByTargetAmount(
             sourceToken,
             targetToken,
             targetAmount,
@@ -47,7 +48,9 @@ export async function GET(request: Request) {
 
         const signRequestTransaction = signRequestFor({
             chainId: 1,
-            metaTransactions: [transaction],
+            metaTransactions: [erc20TokenApprovalTransaction, transaction].filter(
+                (tx): tx is MetaTransaction => tx !== null && tx !== undefined
+            ),
         });
 
         return NextResponse.json({ evmSignRequest: signRequestTransaction }, { status: 200 });

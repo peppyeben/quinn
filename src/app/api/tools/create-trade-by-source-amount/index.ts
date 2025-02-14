@@ -2,7 +2,11 @@
 import type { MetaTransaction } from "near-safe";
 import { isAddress, parseEther, parseUnits } from "ethers";
 import { getBancorPoolTokens } from "../../modules/get-bancor-pool-tokens";
-import { tradeContract } from "../../modules/trade-contract-read";
+import {
+    ERC20_TOKEN_APPROVAL,
+    ERC20TokenContract,
+    tradeContract,
+} from "../../modules/trade-contract-read";
 import { Interface } from "ethers";
 import { POOL_COLLECTION_WRITE_ABI } from "../../modules/abi/pool-collection-write";
 
@@ -83,17 +87,27 @@ export const createTradeBySourceAmount = async (
 
             console.log(transaction);
 
-            return transaction;
+            return { transaction };
         } else {
+            const ERC20TransactionEncodedData = ERC20_TOKEN_APPROVAL();
+
+            // Create Token Approval transaction object
+            const erc20TokenApprovalTransaction: MetaTransaction = {
+                to: sourceTokenToUse,
+                value: "0x0",
+                data: ERC20TransactionEncodedData,
+            };
+
             // Create EVM transaction object
             const transaction: MetaTransaction = {
                 to: process.env.NEXT_PUBLIC_BANCOR_POOL_WRITE_COLLECTION_ADDRESS as string,
-                value: "0x",
+                value: "0x0",
                 data: transactionEncodedData,
             };
 
+            console.log(erc20TokenApprovalTransaction);
             console.log(transaction);
-            return transaction;
+            return { erc20TokenApprovalTransaction, transaction };
         }
     } catch (error) {
         throw error;
