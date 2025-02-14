@@ -2,11 +2,7 @@
 import type { MetaTransaction } from "near-safe";
 import { isAddress, parseEther, parseUnits } from "ethers";
 import { getBancorPoolTokens } from "../../modules/get-bancor-pool-tokens";
-import {
-    ERC20_TOKEN_APPROVAL,
-    ERC20TokenContract,
-    tradeContract,
-} from "../../modules/trade-contract-read";
+import { ERC20_TOKEN_APPROVAL, tradeContract } from "../../modules/trade-contract-read";
 import { Interface } from "ethers";
 import { POOL_COLLECTION_WRITE_ABI } from "../../modules/abi/pool-collection-write";
 

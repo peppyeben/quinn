@@ -1,4 +1,4 @@
-import { Contract, parseUnits } from "ethers";
+import { Contract } from "ethers";
 import { Address } from "viem";
 import { POOL_COLLECTION_READ_ABI } from "./abi/pool-collection-read";
 import { JsonRpcProvider } from "ethers";
