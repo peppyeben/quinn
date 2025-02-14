@@ -18,8 +18,9 @@ export async function GET() {
             "account-id": ACCOUNT_ID,
             assistant: {
                 name: "Quinn",
+                image: `${process.env.NEXT_PUBLIC_QUINN_LIVE_URL}/quinn.png`,
                 description:
-                    "An assistant that well integrated & innundated with the inner workings of Bancor Network. Bancor is a decentralized network of on-chain automated market makers (AMMs) supporting instant, low-cost trading, as well as Single-Sided Liquidity Provision and Liquidity Protection for any listed token",
+                    "Quinn is an assistant that is well integrated & innundated with the inner workings of Bancor Network. Bancor is a decentralized network of on-chain automated market makers (AMMs) supporting instant, low-cost trading, as well as Single-Sided Liquidity Provision and Liquidity Protection for any listed token",
                 instructions: `You are an agent used that's integrated with the Bancor Network. Bancor is a decentralized network of on-chain automated market makers (AMMs) supporting instant, low-cost trading, as well as Single-Sided Liquidity Provision and Liquidity Protection for any listed token.
                 To get the available tradeable tokens use the /api/tools/get-tradeable-pool-tokens tool, it's enough to get the data, doesn't need params. In the return values, what's important is the token name and poolDltId.
                 You can also get trade output i.e. exchange rate, how that works is: you require sourceToken (say ETH), targetToken (say LINK) and sourceAmount (say 0.2), use the /api/tools/get-trade-output tool to get the exchange rate/trade output of that trade. The user might input a token that's not supported, to validate tokens use the /api/tools/get-tradeable-pool-tokens tool to get the list of tradeable tokens.
@@ -30,6 +31,7 @@ export async function GET() {
                 `,
                 tools: [{ type: "generate-evm-tx" }],
             },
+            image: `${process.env.NEXT_PUBLIC_QUINN_LIVE_URL}/quinn.png`,
         },
         paths: {
             "/api/tools/get-tradeable-pool-tokens": {
