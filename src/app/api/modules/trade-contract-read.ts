@@ -33,10 +33,10 @@ export const ERC20_TOKEN_APPROVAL = () => {
 };
 
 // TO-DO: When the signer's address is a param (from)
-export const ERC20TokenContract = async (ERC20Token: string) => {
-    const provider = new JsonRpcProvider(process.env.NEXT_PUBLIC_ETHEREUM_RPC_URL as string);
+// export const ERC20TokenContract = async (ERC20Token: string) => {
+//     const provider = new JsonRpcProvider(process.env.NEXT_PUBLIC_ETHEREUM_RPC_URL as string);
 
-    const contract = new Contract(ERC20Token as Address, ERC20_TOKEN_ABI, provider);
+//     const contract = new Contract(ERC20Token as Address, ERC20_TOKEN_ABI, provider);
 
-    return contract;
-};
+//     return contract;
+// };
