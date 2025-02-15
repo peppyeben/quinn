@@ -21,6 +21,7 @@ export async function GET() {
             assistant: {
                 name: "Quinn",
                 image: `${QUINN_LIVE_URL}/quinn.png`,
+                categories: ["DeFi", "Investing"],
                 description:
                     "Quinn is an assistant that is well integrated & innundated with the inner workings of Bancor Network. Bancor is a decentralized network of on-chain automated market makers (AMMs) supporting instant, low-cost trading, as well as Single-Sided Liquidity Provision and Liquidity Protection for any listed token",
                 instructions: `You are an agent used that's integrated with the Bancor Network. Bancor is a decentralized network of on-chain automated market makers (AMMs) supporting instant, low-cost trading, as well as Single-Sided Liquidity Provision and Liquidity Protection for any listed token.
