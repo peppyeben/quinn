@@ -1,6 +1,8 @@
 import { ACCOUNT_ID, PLUGIN_URL } from "@/app/config";
 import { NextResponse } from "next/server";
 
+const QUINN_LIVE_URL = "https://quinn-chi.vercel.app";
+
 export async function GET() {
     const pluginData = {
         openapi: "3.0.0",
@@ -18,7 +20,7 @@ export async function GET() {
             "account-id": ACCOUNT_ID,
             assistant: {
                 name: "Quinn",
-                image: `${process.env.NEXT_PUBLIC_QUINN_LIVE_URL}/quinn.png`,
+                image: `${QUINN_LIVE_URL}/quinn.png`,
                 description:
                     "Quinn is an assistant that is well integrated & innundated with the inner workings of Bancor Network. Bancor is a decentralized network of on-chain automated market makers (AMMs) supporting instant, low-cost trading, as well as Single-Sided Liquidity Provision and Liquidity Protection for any listed token",
                 instructions: `You are an agent used that's integrated with the Bancor Network. Bancor is a decentralized network of on-chain automated market makers (AMMs) supporting instant, low-cost trading, as well as Single-Sided Liquidity Provision and Liquidity Protection for any listed token.
@@ -31,7 +33,7 @@ export async function GET() {
                 `,
                 tools: [{ type: "generate-evm-tx" }],
             },
-            image: `${process.env.NEXT_PUBLIC_QUINN_LIVE_URL}/quinn.png`,
+            image: `${QUINN_LIVE_URL}/quinn.png`,
         },
         paths: {
             "/api/tools/get-tradeable-pool-tokens": {
