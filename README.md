@@ -1,141 +1,33 @@
-# Bitte AI Agent NextJS Template
+## What is Quinn?
 
-This template provides a starting point for creating AI agents using the Bitte Protocol with Next.js. It includes pre-configured endpoints and tools that demonstrate common agent functionalities.
+Quinn is an AI agent designed to provide users with information on tradeable tokens and exchange rates on the [Bancor network](https://bancor.network/). Bancor facilitates instant, low-cost trading, single-sided liquidity provision, and liquidity protection for any listed token.
 
-## Features
+Quinn's primary function is to help users navigate and interact with the Bancor Network by providing access to information for trading and liquidity.
 
-- 🤖 Pre-configured AI agent setup
-- 🛠️ Built-in tools and endpoints:
-  - Blockchain information retrieval
-  - NEAR transaction generation
-  - Reddit frontpage fetching
-  - Twitter share intent generation
-  - Coin flip functionality
-- ⚡ Next.js 14 with App Router
-- 🎨 Tailwind CSS for styling
-- 📝 TypeScript support
-- 🔄 Hot reload development environment
+The agent can perform several tasks on the Bancor network:
 
-## Quick Start
+**1. Provide a list of tradeable tokens on the Bancor Network:** With Quinn agent, users can verify whether a specific token is supported for trading.
 
-1. Clone this repository
-2. Configure environment variables (create a `.env` or `.env.local` file)
+**2. Calculate trade outputs:** Quinn agent can calculate trade outputs, or exchange rates for a specific trade. This requires a source token, target token, and source amount.
 
-```bash
-# Get your API key from https://key.bitte.ai
-BITTE_API_KEY='your-api-key'
+-   **Source Token:** The token the user has and is willing to trade.
+-   **Target Token:** The token the user wants to acquire.
+-   **Source Amount:** The amount of the source token the user is willing to trade.
 
-ACCOUNT_ID='your-account.near'
-```
+For example, if a user wants to trade a certain amount of ETH for DAI, they would input ETH as the source token, DAI as the target token, and specify the amount of ETH they are willing to trade (source amount)1. The Quinn agent then calculates and returns the amount of DAI the user would receive for that ETH amount
 
-3. Install dependencies:
+**3. Calculate Trade Inputs:** Quinn agent tells the user the amount of source token they need to get their target token. The agent requires a source token, target token, and target amount.
 
-```bash
-pnpm install
-```
+-   **Source Token:** The token the user has
+-   **Target Token:** The token the user wants
+-   **Source Amount:** The amount of the source token the user is willing to trade.
 
-4. Start the development server:
+For example, if a user wants to receive 50 LINK and is willing to trade ETH, the user would input ETH as the source token, LINK as the target token, and 50 LINK as the target amount1. The agent then calculates how much ETH is needed to get 50 LINK.
 
-```bash
-pnpm run dev
-```
+**4. Create Trade Transactions:** Quinn can create trades for you in the following way:
 
-This will:
+-   You can create a trade by entering the source token, target token, and source amount you want. You can also pick who gets the tokens (beneficiary) and how much the price can change (slippage). Picking a beneficiary is optional if your EVM wallet is connected.
 
-- Start your Next.js application
-- Launch make-agent
-- Prompt you to sign a message in Bitte wallet to create an API key
-- Launch your agent in the Bitte playground
-- Allow you to freely edit and develop your code in the playground environment
+-   Or, you can create a trade by saying how much of the target token you want. Similar to the previous method, specifying a beneficiary and slippage is optional.
 
-5. Build the project locally:
-
-```bash
-pnpm run build:dev
-```
-
-This will build the project and not trigger `make-agent deploy`
-
-- using just `build` will trigger make-agent deploy and not work unless you provide your deployed plugin url using the `-u` flag.
-
-## Available Tools
-
-The template includes several pre-built tools:
-
-### 1. Blockchain Information
-
-- Endpoint: `/api/tools/get-blockchains`
-- Returns a randomized list of blockchain networks
-
-### 2. NEAR Transaction Generator
-
-- Endpoint: `/api/tools/create-near-transaction`
-- Creates NEAR transaction payloads for token transfers
-
-### 3. EVM Transaction Generator
-
-- Endpoint: `/api/tools/create-evm-transaction`
-- Creates EVM transaction payloads for native eth transfers
-
-### 4. Twitter Share
-
-- Endpoint: `/api/tools/twitter`
-- Generates Twitter share intent URLs
-
-### 5. Coin Flip
-
-- Endpoint: `/api/tools/coinflip`
-- Simple random coin flip generator
-
-### 6. Get User
-
-- Endpoint: `/api/tools/get-user`
-- Returns the user's account ID
-
-## AI Agent Configuration
-
-The template includes a pre-configured AI agent manifest at `/.well-known/ai-plugin.json`. You can customize the agent's behavior by modifying the configuration in `/api/ai-plugins/route.ts`. This route generates and returns the manifest object.
-
-## Deployment
-
-1. Push your code to GitHub
-2. Deploy to Vercel or your preferred hosting platform
-3. Add your `BITTE_API_KEY` to the environment variables
-4. The `make-agent deploy` command will automatically run during build
-
-## Making your own agent
-
-Whether you want to add a tool to this boilerplate or make your own standalone agent tool, here's you'll need:
-
-1. Make sure [`make-agent`](https://github.com/BitteProtocol/make-agent) is installed in your project:
-
-```bash
-pnpm install --D make-agent
-```
-
-2. Set up a manifest following the OpenAPI specification that describes your agent and its paths.
-3. Have an api endpoint with the path `GET /api/ai-plugin` that returns your manifest
-
-## Setting up the manifest
-
-Follow the [OpenAPI Specification](https://swagger.io/specification/#schema-1) to add the following fields in the manifest object:
-
-- `openapi`: The OpenAPI specification version that your manifest is following. Usually this is the latest version.
-- `info`: Object containing information about the agent, namely its 'title', 'description' and 'version'.
-- `servers`: Array of objects containing the urls for the deployed instances of the agent.
-- `paths`: Object containing all your agent's paths and their operations.
-- `"x-mb"`: Our custom field, containing the account id of the owner and an 'assistant' object with the agent's metadata, namely the tools it uses, and additional instructions to guide it.
-
-## Learn More
-
-- [Bitte Protocol Documentation](https://docs.bitte.ai)
-- [Next.js Documentation](https://nextjs.org/docs)
-- [OpenAPI Specification](https://swagger.io/specification/)
-
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-## License
-
-MIT License
+For example, If you want to trade 1 ETH for DAI, you enter ETH as the source token, DAI as the target token, and 1 ETH as the source amount. Quinn then creates the trade. If you want 100 DAI and have ETH, you enter ETH as the source token, DAI as the target token, and 100 DAI as the target amount.
